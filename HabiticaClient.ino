@@ -70,7 +70,7 @@ unsigned long currentMillis = 0;
 unsigned long previousMillis = 0;
 const unsigned long shortBeepDuration = 100;
 const unsigned long longBeepDuration = 800;
-const unsigned long celebrateDuration = 2000;
+const unsigned long celebrateDuration = 1500;
 const unsigned long checkServerEveryXMilliseconds = 60000;
 unsigned long lastCheckedMillis = 0;
 
@@ -282,6 +282,7 @@ void ShowEarnedGoldOnLCD()
 
 void Celebrate()
 {
+	currentMillis = millis();
 	while (millis() < (currentMillis + celebrateDuration))
 	{
 		if (millis() % 2 == 0)
