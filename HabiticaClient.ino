@@ -562,47 +562,38 @@ void ShowDigit(int digit)    //https://youtu.be/cHA-fwiA4Qo
 	{
 	case 0:
 		shiftOut(dataPin, clockPin, MSBFIRST, 63);
-		digitalWrite(latchPin, HIGH);
 		break;
 	case 1:
 		shiftOut(dataPin, clockPin, MSBFIRST, 6);
-		digitalWrite(latchPin, HIGH);
 		break;
 	case 2:
 		shiftOut(dataPin, clockPin, MSBFIRST, 91);
-		digitalWrite(latchPin, HIGH);
 		break;
 	case 3:
 		shiftOut(dataPin, clockPin, MSBFIRST, 79);
-		digitalWrite(latchPin, HIGH);
 		break;
 	case 4:
 		shiftOut(dataPin, clockPin, MSBFIRST, 102);
-		digitalWrite(latchPin, HIGH);
 		break;
 	case 5:
 		shiftOut(dataPin, clockPin, MSBFIRST, 109);
-		digitalWrite(latchPin, HIGH);
 		break;
 	case 6:
 		shiftOut(dataPin, clockPin, MSBFIRST, 125);
-		digitalWrite(latchPin, HIGH);
 		break;
 	case 7:
 		shiftOut(dataPin, clockPin, MSBFIRST, 7);
-		digitalWrite(latchPin, HIGH);
 		break;
 	case 8:
 		shiftOut(dataPin, clockPin, MSBFIRST, 127);
-		digitalWrite(latchPin, HIGH);
 		break;
 	case 9:
 		shiftOut(dataPin, clockPin, MSBFIRST, 103);
-		digitalWrite(latchPin, HIGH);
 		break;
 	default:
 		break;
 	}
+	digitalWrite(latchPin, HIGH);
 }
 
 void SetLEDsRedYellowGreen(int redState, int yellowState, int greenState)
