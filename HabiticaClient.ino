@@ -2,14 +2,14 @@
 #include <LiquidCrystal.h>
 
 char ssid[] = "YOUR_WIFI_NAME";			//ENTER INFO (The SSID of your wi-fi)
-char pass[] = "YOUR_WIFI_PASSWORD";	//ENTER INFO (Your wi-fi password)
+char pass[] = "YOUR_WIFI_PASSWORD";     	//ENTER INFO (Your wi-fi password)
 int status = WL_IDLE_STATUS;
-WiFiClient client;
-WiFiClient client2;
+WiFiClient client;	//This one will check dailies and receive uncompleted daily tasks.
+WiFiClient client2;	//This one will send the recently completed daily task information and receive the current gold amount.
 
-String habiticaUserId = "YOUR_HABITICA_API_USERID";		//ENTER INFO (User ID)     You can find these at:
-String habiticaAPIKey = "YOUR_HABITICA_API_TOKEN";		//ENTER INFO (API Token)   https://habitica.com/#/options/settings/api
-char server[] = "habiticaclientmiddleman.azurewebsites.net";
+String habiticaUserId = "YOUR_HABITICA_API_USERID";	//ENTER INFO (User ID)     You can find these at:
+String habiticaAPIKey = "YOUR_HABITICA_API_TOKEN";	//ENTER INFO (API Token)   https://habitica.com/#/options/settings/api
+char server[] = "habiticaclientmiddleman.azurewebsites.net";	//The communication will go through this web app that I made. Don't change this.
 
 LiquidCrystal lcd(11, 10, 9, 8, 7, 6);
 
@@ -66,12 +66,11 @@ long lastDebounceTimeBLU = 0;
 long lastDebounceTimeRED = 0;
 const long debounceDelay = 50;
 
+const unsigned long checkServerEveryXMilliseconds = 60000;
+const unsigned long beepDuration = 100;
+const unsigned long celebrateDuration = 1500;
 unsigned long currentMillis = 0;
 unsigned long previousMillis = 0;
-const unsigned long shortBeepDuration = 100;
-const unsigned long longBeepDuration = 800;
-const unsigned long celebrateDuration = 1500;
-const unsigned long checkServerEveryXMilliseconds = 60000;
 unsigned long lastCheckedMillis = 0;
 
 void setup() {
@@ -110,6 +109,8 @@ void setup() {
 
 void loop() {
 	ListenForInput();
+
+	//This while loop reads the response that includes uncompleted daily tasks and puts them into String variables.
 	while (client.available())
 	{
 		char c = client.read();
@@ -200,6 +201,7 @@ void loop() {
 		}
 	}
 
+	//This while loop reads the response which includes current gold. The web app puts a '%' at the beginning and a 'g' at the end of the gold amount so I can tell arduino when to start and stop reading
 	while (client2.available())
 	{
 		char c = client2.read();
@@ -220,13 +222,14 @@ void loop() {
 		}
 	}
 
-	if ((millis() - lastCheckedMillis) == checkServerEveryXMilliseconds)
+	if ((millis() - lastCheckedMillis) == checkServerEveryXMilliseconds) //Arduino will ask the server for uncompleted daily tasks after every "checkServerEveryXMilliseconds" milliseconds from the last check
 	{
 		ResetValues();
 		CheckServer();
 	}
 }
 
+//Gets the uncompleted daily tasks for the user
 void CheckServer()
 {
 	SetLEDsRedYellowGreen(0, 1, 0);
@@ -417,7 +420,6 @@ void ListenForInput()    //https://www.arduino.cc/en/Tutorial/Debounce
 			}
 		}
 	}
-
 	lastStateBLU = readingBLU;
 	lastStateRED = readingRED;
 }
@@ -491,7 +493,7 @@ void ActionBLU()
 		ResetValues();
 		CheckServer();
 	}
-	BeepShort();
+	Beep();
 }
 
 void ActionRED()
@@ -506,7 +508,7 @@ void ActionRED()
 		ResetValues();
 		CheckServer();
 	}
-	BeepShort();
+	Beep();
 }
 
 void SendActiveTask()
@@ -522,26 +524,10 @@ void SendActiveTask()
 	}
 }
 
-void Beep()    //https://tkkrlab.nl/wiki/Arduino_KY-006_Small_passive_buzzer_module
+void Beep()
 {
 	currentMillis = millis();
-	while (millis() < (currentMillis + longBeepDuration))
-	{
-		if (millis() % 2 == 0)
-		{
-			digitalWrite(buzzer, 1);
-		}
-		else if (millis() % 2 == 1)
-		{
-			digitalWrite(buzzer, 0);
-		}
-	}
-}
-
-void BeepShort()
-{
-	currentMillis = millis();
-	while (millis() < (currentMillis + shortBeepDuration))
+	while (millis() < (currentMillis + beepDuration))
 	{
 		if (millis() % 3 == 0)
 		{
@@ -604,16 +590,13 @@ void SetLEDsRedYellowGreen(int redState, int yellowState, int greenState)
 }
 
 void PrintWifiStatus() {
-	// print the SSID of the network you're attached to:
 	Serial.print("SSID: ");
 	Serial.println(WiFi.SSID());
 
-	// print your WiFi shield's IP address:
 	IPAddress ip = WiFi.localIP();
 	Serial.print("IP Address: ");
 	Serial.println(ip);
 
-	// print the received signal strength:
 	long rssi = WiFi.RSSI();
 	Serial.print("signal strength (RSSI):");
 	Serial.print(rssi);
