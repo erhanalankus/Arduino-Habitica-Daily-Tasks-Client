@@ -7,3 +7,4 @@ All the info about the project is at: https://www.hackster.io/erhan9049/arduino-
 
 <img src="http://i.imgur.com/4njsKT6.jpg"/>
 <img src="http://i.imgur.com/AZYGeRO.jpg"/>
+<img src="https://github.com/erhanalankus/Arduino-Habitica-Daily-Tasks-Client/blob/master/img-schematics.png"/>
